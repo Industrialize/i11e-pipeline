@@ -1,6 +1,6 @@
 {
   "name": "i11e-pipeline",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "i11e pipeline",
   "main": "lib/index.js",
   "scripts": {
@@ -15,8 +15,7 @@
     "i11e",
     "pipeline"
   ],
-  "author": "Bo HOU <bhoustudio@gmail.com> (https://github.com/bhou/crawlerjs)",
-  "license": "ISC",
+  "author": "Bo HOU <daily.bhou@gmail.com>",
   "bugs": {
     "url": "https://github.com/Industrialize/i11e-pipeline/issues"
   },
@@ -34,7 +33,6 @@
     "eventemitter3": "^1.2.0",
     "i11e-box": "^0.1.0",
     "i11e-utils": "^0.1.0",
-    "moniker": "^0.1.2",
-    "i11e-robot": "^0.2.0"
+    "moniker": "^0.1.2"
   }
 }

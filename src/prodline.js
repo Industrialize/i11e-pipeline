@@ -3,10 +3,9 @@ const _ = require('./highland');
 const DEFAULT_PARALLEL = 3;
 
 const createError = require('i11e-utils').error;
-const Robot = require('i11e-robot');
 
 _.addMethod('install', function(comment, robot, parallel) {
-  if (Robot.isRobot(comment)) {
+  if (typeof comment !== 'string') {
     parallel = robot || DEFAULT_PARALLEL;
     robot = comment;
   }
