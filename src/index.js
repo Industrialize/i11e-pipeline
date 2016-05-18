@@ -5,8 +5,16 @@ var defaultPipeline = {
   }
 }
 
-const visitors = [];
-const createPipeline = (delegate) => {
+var visitors = [];
+
+var exports = {};
+
+/**
+ * Create a new pipeline model
+ * @param  {Object} delegate Pipeline delegate
+ * @return {Pipeline}          Pipeline model
+ */
+exports.createPipeline = (delegate) => {
   const ReserverdFunctions = ['setDelegate', 'initPipeline', 'getModel', 'getHead', 'getTail', 'push', '_', '$', 'process'];
   var _ = require('./prodline');
   var createError = require('i11e-utils').error;
@@ -179,8 +187,8 @@ const createPipeline = (delegate) => {
   return Pipeline;
 }
 
-const pipeline = (fn) => {
-  var Pipeline = createPipeline({
+exports.pipeline = (fn) => {
+  var Pipeline = exports.createPipeline({
     process() {
       return fn(this.source);
     }
@@ -189,8 +197,8 @@ const pipeline = (fn) => {
   return new Pipeline();
 }
 
-module.exports = {
-  createPipeline, // pipeline builder
-  pipeline, // create an empty pipeline
-  visitors
+exports.extend = (extension) => {
+  visitors = extensions.getPipelineVisitors();
 }
+
+module.exports = exports;
