@@ -16,10 +16,11 @@ var exports = {};
  */
 exports.createPipeline = (delegate) => {
   const ReserverdFunctions = ['setDelegate', 'initPipeline', 'getModel', 'getHead', 'getTail', 'push', '_', '$', 'process'];
-  var _ = require('./prodline');
   var createError = require('i11e-utils').error;
-  var Source = require('./Source');
   var Box = require('i11e-box');
+  var _ = require('./prodline');
+  var Source = require('./Source');
+
   const Sequence = {
     newName() {
       var Moniker = require('moniker');
@@ -32,18 +33,45 @@ exports.createPipeline = (delegate) => {
   }
 
   class SourceWrapper{
-    constructor(pipeline, source) {
+    constructor(pipeline, source, filter) {
       this.pipeline = pipeline;
       this.source = source;
+      this.filter = (box) => {return true};
+    }
+
+    setFilter(filter) {
+      this.filter = (box) => {
+        if (typeof filter === 'function') {
+          return filter(box);
+        } else {
+          return true;
+        }
+      }
     }
 
     push(box) {
       if (!Box.isBox(box)) box = new Box(box);
+
 "#if process.env.NODE_ENV !== 'production'";
+      var skip = false;
+      for (let visitor of visitors) {
+        if (typeof visitor.willFilter === 'function') {
+          if (visitor.willFilter(this.pipeline, box)) skip = true;
+        }
+      }
+
+      if (skip) {
+        return;
+      } else {
+        var pass = this.filter(box);
+        if (!pass) return;
+      }
+
       for (let visitor of visitors) {
         if (typeof visitor.enter === 'function') visitor.enter(this.pipeline, box);
       }
 "#endif";
+
       return this.source.push(box);
     }
 
