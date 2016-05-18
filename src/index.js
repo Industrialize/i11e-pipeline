@@ -55,16 +55,25 @@ exports.createPipeline = (delegate) => {
 "#if process.env.NODE_ENV !== 'production'";
       var skip = false;
       for (let visitor of visitors) {
-        if (typeof visitor.willFilter === 'function') {
-          if (visitor.willFilter(this.pipeline, box)) skip = true;
+        if (typeof visitor.willFilter === 'function'
+          && visitor.willFilter(this.pipeline, box)) {
+          skip = true;
         }
       }
 
-      if (skip) {
+      var pass = true;
+      if (!skip && !this.filter(box)) {
+        pass = false;
+      }
+
+      for (let visitor of visitors) {
+        if (typeof visitor.didFilter === 'function' && !visitor.didFilter(this.pipeline, box, pass)) {
+          pass = false;
+        }
+      }
+
+      if (!pass) {
         return;
-      } else {
-        var pass = this.filter(box);
-        if (!pass) return;
       }
 
       for (let visitor of visitors) {

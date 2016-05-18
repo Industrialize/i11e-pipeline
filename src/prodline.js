@@ -4,7 +4,7 @@ const DEFAULT_PARALLEL = 3;
 
 const createError = require('i11e-utils').error;
 
-_.addMethod('install', function(comment, robot, parallel) {
+function install(comment, robot, parallel) {
   if (typeof comment !== 'string') {
     parallel = robot || DEFAULT_PARALLEL;
     robot = comment;
@@ -40,11 +40,15 @@ _.addMethod('install', function(comment, robot, parallel) {
         )
       );
   }
-});
+};
 
-_.addMethod('drive', function(fn) {
+function drive(fn) {
   if (!fn) fn = (box) => {};
   return this.each(fn);
-});
+}
+
+_.addMethod('install', install);
+_.addMethod('next', install);
+_.addMethod('drive', drive);
 
 module.exports = _;
