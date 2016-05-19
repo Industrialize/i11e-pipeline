@@ -243,7 +243,7 @@ exports.pipeline = (fn) => {
 }
 
 exports.extend = (extension) => {
-  visitors = extensions.getPipelineVisitors();
+  visitors = extension.getPipelineVisitors();
 }
 
 module.exports = exports;
