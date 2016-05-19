@@ -1,6 +1,6 @@
 {
   "name": "i11e-pipeline",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "i11e pipeline",
   "main": "lib/index.js",
   "scripts": {
