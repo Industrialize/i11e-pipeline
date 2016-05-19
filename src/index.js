@@ -235,6 +235,7 @@ exports.createPipeline = (delegate) => {
 exports.pipeline = (fn) => {
   var Pipeline = exports.createPipeline({
     process() {
+      if (!fn) return this.source._();
       return fn(this.source);
     }
   });
