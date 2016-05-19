@@ -77,7 +77,7 @@ exports.createPipeline = (delegate) => {
       }
 
       for (let visitor of visitors) {
-        if (typeof visitor.enter === 'function') visitor.enter(this.pipeline, box);
+        if (typeof visitor.willProcess === 'function') visitor.willProcess(this.pipeline, box);
       }
 "#endif";
 
@@ -180,7 +180,7 @@ exports.createPipeline = (delegate) => {
           .doto((box) => {
 "#if process.env.NODE_ENV !== 'production'";
             for (let visitor of visitors) {
-              if (typeof visitor.exit === 'function') visitor.exit(this, null, box);
+              if (typeof visitor.didProcess === 'function') visitor.didProcess(this, null, box);
             }
 "#endif";
 
@@ -200,6 +200,14 @@ exports.createPipeline = (delegate) => {
               })
               .drive();
             }
+          })
+          .errors((err, rethrow) => {
+"#if process.env.NODE_ENV !== 'production'";
+            for (let visitor of visitors) {
+              if (typeof visitor.didProcess === 'function') visitor.didProcess(this, err, err.source);
+            }
+"#endif";
+            rethrow(err);
           });
       }
 
