@@ -81,7 +81,7 @@ class Source {
   getProdline() {
     let stream = new Stream();
     this.streams.push(stream);
-    if (!this.options) return this.stream.toGenerator().fork();
+    if (!this.options) return stream.toGenerator().fork();
     return _(this.options).fork();
   }
 
@@ -90,10 +90,7 @@ class Source {
    * @return {Stream} highland stream
    */
   _() {
-    let stream = new Stream();
-    this.streams.push(stream);
-    if (!this.options) return stream.toGenerator().fork();
-    return _(this.options).fork();
+    return this.getProdline();
   }
 
   /**

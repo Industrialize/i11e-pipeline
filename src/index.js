@@ -33,51 +33,19 @@ exports.createPipeline = (delegate) => {
   }
 
   class SourceWrapper{
-    constructor(pipeline, source, filter) {
+    constructor(pipeline, source) {
       this.pipeline = pipeline;
       this.source = source;
-      this.filter = (box) => {return true};
-    }
-
-    setFilter(filter) {
-      this.filter = (box) => {
-        if (typeof filter === 'function') {
-          return filter(box);
-        } else {
-          return true;
-        }
-      }
     }
 
     push(box) {
       if (!Box.isBox(box)) box = new Box(box);
 
 "#if process.env.NODE_ENV !== 'production'";
-      var skip = false;
       for (let visitor of visitors) {
-        if (typeof visitor.willFilter === 'function'
-          && visitor.willFilter(this.pipeline, box)) {
-          skip = true;
+        if (visitor.accept(this.pipeline)) {
+          visitor.willProcess(this.pipeline, box);
         }
-      }
-
-      var pass = true;
-      if (!skip && !this.filter(box)) {
-        pass = false;
-      }
-
-      for (let visitor of visitors) {
-        if (typeof visitor.didFilter === 'function' && !visitor.didFilter(this.pipeline, box, pass)) {
-          pass = false;
-        }
-      }
-
-      if (!pass) {
-        return;
-      }
-
-      for (let visitor of visitors) {
-        if (typeof visitor.willProcess === 'function') visitor.willProcess(this.pipeline, box);
       }
 "#endif";
 
@@ -92,14 +60,20 @@ exports.createPipeline = (delegate) => {
   class Pipeline {
     constructor(options = {}) {
       this.id = Sequence.newName();
-      this.model = "Unnamed Production Line";
       this.options = options;
-      this.source = new SourceWrapper(this, new Source());
-      this.tail = null;
-
-      this.outgoings = [];
 
       this.setDelegate(delegate);
+
+      // instance properties
+      this.name = options.name || 'Anonymous';
+      this.comment = options.comment || ""; // comment of this robot, could be initiated from options
+
+      this.tail = null;
+      this.outgoings = [];
+
+      // class properties
+      this.model = typeof this.delegate.getModel === 'function' ? this.delegate.getModel() : "Unnamed Production Line";
+      this.source = new SourceWrapper(this, new Source());
 
       if (this.delegate.initPipeline) {
         this.delegate.initPipeline.call(this);
@@ -108,8 +82,6 @@ exports.createPipeline = (delegate) => {
 
     setDelegate(delegate) {
       this.delegate = delegate;
-
-      if (this.delegate.getModel) this.model = this.delegate.getModel();
 
       for (let key in this.delegate) {
         // skip predefined functions
@@ -127,6 +99,10 @@ exports.createPipeline = (delegate) => {
 
     getId() {
       return this.id;
+    }
+
+    getName() {
+      return this.name;
     }
 
     getModel() {
@@ -180,7 +156,9 @@ exports.createPipeline = (delegate) => {
           .doto((box) => {
 "#if process.env.NODE_ENV !== 'production'";
             for (let visitor of visitors) {
-              if (typeof visitor.didProcess === 'function') visitor.didProcess(this, null, box);
+              if (visitor.accept(this.pipeline)) {
+                visitor.didProcess(this, null, box);
+              }
             }
 "#endif";
 

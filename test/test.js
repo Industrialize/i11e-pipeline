@@ -58,7 +58,49 @@ exports['test pipeline'] = {
     .drive();
 
     test.done();
-  }
+  },
+
+  // 'test multiple outgoings': (test) => {
+  //   const Pipeline = require('../lib');
+  //   const Robot = require('i11e-robot');
+  //   const Box = require('i11e-box');
+  //
+  //   var pl = Pipeline.pipeline();
+  //
+  //   count = 0;
+  //   pl._()
+  //     .install(Robot.robot((box, done) => {
+  //       box.set('v', 100);
+  //       count++;
+  //       done(null, box);
+  //     }))
+  //     .doto((box) => {
+  //       test.equal(box.get('v'), 100);
+  //
+  //       if (count == 2) {
+  //         test.done();
+  //       }
+  //     })
+  //     .drive();
+  //
+  //   pl._()
+  //     .install(Robot.robot((box, done) => {
+  //       box.set('v', 10);
+  //       count++;
+  //       done(null, box);
+  //     }))
+  //     .doto((box) => {
+  //       test.equal(box.get('v'), 10);
+  //
+  //       if (count == 2) {
+  //         test.done();
+  //       }
+  //     })
+  //     .drive();
+  //
+  //   pl.$()
+  //     .push({});
+  // }
 
   // 'test branch pipeline': (test) => {
   //   const Constants = require('../index').Constants;
