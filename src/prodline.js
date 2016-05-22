@@ -10,35 +10,38 @@ function install(comment, robot, parallel) {
     robot = comment;
   }
 
-  if (robot.isSync()) {
-    var fn = (box) => {
-      try {
-        return robot.process(box);
-      } catch (err) {
-        throw createError(500, err, box);
-      }
-    };
-
-    return this.filter(robot.filter.bind(robot)).map(fn);
+  if (robot.isFilter()) {
+    return this.filter(robot.process(box));
   } else {
-    var fn = (box, done) => {
-      try {
-        return robot.process(box, done);
-      } catch (err) {
-        throw createError(500, err, box);
-      }
-    };
+    if (robot.isSync()) {
+      var fn = (box) => {
+        try {
+          return robot.process(box);
+        } catch (err) {
+          throw createError(500, err, box);
+        }
+      };
 
-    if (!parallel) parallel = DEFAULT_PARALLEL;
+      return this.filter(robot.filter.bind(robot)).map(fn);
+    } else {
+      var fn = (box, done) => {
+        try {
+          return robot.process(box, done);
+        } catch (err) {
+          throw createError(500, err, box);
+        }
+      };
 
-    return this
-      .filter(robot.filter.bind(robot))
-      .through(
-        _.pipeline(
-          _.map(_.wrapCallback(fn)),
-          _.parallel(parallel)
-        )
-      );
+      if (!parallel) parallel = DEFAULT_PARALLEL;
+
+      return this
+        .through(
+          _.pipeline(
+            _.map(_.wrapCallback(fn)),
+            _.parallel(parallel)
+          )
+        );
+    }
   }
 };
 
