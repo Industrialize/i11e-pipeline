@@ -11,7 +11,9 @@ function install(comment, robot, parallel) {
   }
 
   if (robot.isFilter()) {
-    return this.filter(robot.process(box));
+    return this.filter((box) => {
+      return robot.process(box);
+    });
   } else {
     if (robot.isSync()) {
       var fn = (box) => {
